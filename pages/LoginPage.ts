@@ -47,5 +47,7 @@ export class LoginPage {
     const text = await this.errorMessage.textContent();
     return text?.trim() ?? null;
   }
+
+  
 }
 
