@@ -8,6 +8,7 @@ export class InventoryPage {
   readonly inventoryItemNames: Locator;
   readonly inventoryItemPrices: Locator;
   readonly sortDropdown: Locator;
+  readonly cartBadge: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -17,6 +18,7 @@ export class InventoryPage {
     this.inventoryItemNames = page.getByTestId('inventory-item-name');
     this.inventoryItemPrices = page.getByTestId('inventory-item-price');
     this.sortDropdown = page.getByTestId('product-sort-container');
+    this.cartBadge = page.getByTestId('shopping-cart-badge');
   }
 
   async getProductCount(): Promise<number> {
@@ -34,5 +36,16 @@ export class InventoryPage {
   async getProductPrices(): Promise<number[]> {
     const priceTexts = await this.inventoryItemPrices.allTextContents();
     return priceTexts.map(p => parseFloat(p.replace('$', '')));
+  }
+
+  async addToCart(productName: string): Promise<void> {
+    const item = this.inventoryItems.filter({ hasText: productName });
+    await item.getByRole('button', { name: 'Add to cart' }).click();
+  }
+
+  async getCartBadgeCount(): Promise<number> {
+    if (!await this.cartBadge.isVisible()) return 0;
+    const text = await this.cartBadge.textContent();
+    return parseInt(text ?? '0', 10);
   }
 }
